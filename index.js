@@ -70,6 +70,7 @@ backgroundColor = backgroundColor || 'white'
 ;(async () => {
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
+  page.on('console', msg => console.log('PAGE LOG:', ...msg.args));
   page.setViewport({ width, height })
   await page.goto(`file://${path.join(__dirname, 'index.html')}`)
 
@@ -78,7 +79,7 @@ backgroundColor = backgroundColor || 'white'
   const definition = fs.readFileSync(input, 'utf-8')
 
   var myconfig, myCSS
-  
+
   if (configFile) {
     myconfig = JSON.parse(fs.readFileSync(configFile, 'utf-8'))
   }
@@ -111,6 +112,11 @@ backgroundColor = backgroundColor || 'white'
     }
 
     window.mermaid.init(undefined, container)
+
+    if (myCSS) {
+      window.document.getElementById('mermaidChart0').getElementsByTagName('style')[0].innerHTML = myCSS;
+    }
+
   }, definition, theme, myconfig, myCSS)
 
   if (output.endsWith('svg')) {
